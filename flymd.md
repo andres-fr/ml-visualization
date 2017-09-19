@@ -1,3 +1,4 @@
 # test
 
-flymd testfLyMd-mAkEr
+flymd test
+fLyMd-mAkEr
