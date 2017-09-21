@@ -1,17 +1,20 @@
 #  TL;DR
 
-1. make sure you have Tensorflow and NumPy installed
+Following this instructions is probably enough to use TensorBoard to visualize data. To develop plugins, read further.
+
 1. clone this repo
-1. run `python tutorial.py` 
-1. run `tensorboard --logdir=logs` 
-1. browse `localhost:6006`
+1. `pip install tensorflow-tensorboard` # this is the TB standalone (no needed if TF already installed)
+1. `pip install tensorboard-pytorch` # this is the actual logger
+1. run `python demo_builtin_visualizations.py` # writes some data into the `./logs` dir
+1. run `tensorboard --logdir=logs` # tell the TB server to send the data in the `./logs` dir via `0.0.0.0:6006`
+1. browse `localhost:6006` # visualize the data served by TB with any web browser (chrome works, others may not).
 
 
 # TensorBoard Mechanics
 
 TensorBoard (TB) is a suite of [machine-learning related visualization tools](https://raw.githubusercontent.com/lanpa/tensorboard-pytorch/master/screenshots/Demo.gif) designed to run on a HTTP server, so they can be then visited by a web browser locally and remotely. It is delivered as a part of the TensorFlow (TF) libraries, and the [TF tutorials](https://www.tensorflow.org/api_guides/python/summary) provide an explanation for the TF-specific usage, but it can be used with other platforms like PyTorch  (PT) or simply from Python as explained in [this SO post](https://stackoverflow.com/questions/37902705/how-to-manually-create-a-tf-summary) and described later (Actually, it can be run from other languages like [Ruby](https://github.com/somaticio/tensorflow.rb) as well but only Python will be covered here).
 
-As for September 2017, TensorBoard provides built-in visualization support for **scalar functions, images, histograms, text, audio and distributions**, as well as for **projector and profiling data**. For the TF and PT platforms, it also provides an inspection tool for the **computational graph**. also, via its [recently released api](https://github.com/tensorflow/tensorboard-plugin-example), it is possible to develope **plugins** to provide support for custom visualizations and ui. this is also covered here.
+As for September 2017, TensorBoard provides built-in visualization support for **scalar functions, images, histograms, text, audio and distributions**, as well as for **projector and profiling data**. For the TF and PT platforms, it also provides an inspection tool for the **computational graph**. also, via its [recently released api](https://github.com/tensorflow/tensorboard-plugin-example), it is possible to develope **plugins** to provide support for custom visualizations and UI. this is also covered here.
 
 
 ### Logdir and Summaries
@@ -29,22 +32,21 @@ this allows us to define a logger class that encapsulates all this functionality
 
 ### The Logger Class
 
-The goal of this repo's [`Logger`](code/logger.py) class is to provide a clean and flexible interface between any python program and the tb server. For that, there are several existing projects:
+There are already several projects already that try to provide a clean and flexible interface between any python program and the tb server:
 
 * [tensorboard-logger](https://github.com/TeamHG-Memex/tensorboard_logger): it doesn't require to import TF at all, but works only for scalars
 * [pytorch-tutorial](https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/04-utils/tensorboard): it allows logging of scalars, images and histograms only. It is specific for PT
 * [tensorboard-pytorch](https://github.com/lanpa/tensorboard-pytorch) includes support for TB's newest functionality, except of plugins. It is also PT-specific
 
-Among all of them, [tensorboard-pytorch](https://github.com/lanpa/tensorboard-pytorch) is the most complete one. A brief analysis of its contents can be found [here](lanpa_description.md). The idea is to extend it, without losing any of its functionality, for the two following goals:
+Among them, the package [tensorboard-pytorch](https://github.com/lanpa/tensorboard-pytorch) (installable via `pip`) is the most complete one, since it implements interface for all TB's built-in visualizations. A brief analysis of its contents can be found [here](lanpa_description.md). The idea of the present repo is to document how to use it (or extend it without losing any of its functionality), for the two following goals:
 
 * Allow its logger functions to directly process numpy and python native datatypes (that is, not being PT-specific)
 * include all of TB's functionality, including the recently released plugin API.
 
+For the first goal, take a look at the [`demo_builtin_visualizations.py`](demo_builtin_visualizations.py) file, which has an example for every one of the built-in visualizations. For the second one, read further.
 
 
-
-
-### TensorBoard Pluging API
+### TensorBoard Plugin API
 
 Apart from the built-in support for the visualization of scalars, images and such, TB has released an API that allows developers to create new, custom visualizations. For that, it is necessary to complete the description of TB's data model:  we already explained that the information unit is the `Summary`, and that its `tag` attribute relates different summaries to the same “data stream”. The other three needed concepts are:
 
@@ -59,14 +61,12 @@ To develop the plugins, there is the Python part (create a `summary` operation, 
 
 ### SSH TUnneling
 
-In some cases, the computer holding the log files is only accessible via SSH and prevents visiting the TensorBoard HTTP server. In that case, SSH tunneling can be performed: The following command forwards TensorBoard to `localhost:16006`, assuming it was started with the default IP address:
-`ssh -p <PORT> <USER>@<SERVER> -N -f -L localhost:16006:localhost:6006`
-https://git.ccc.cs.uni-frankfurt.de/rodriguez/dnc-tracking/blob/master/wiki/basic_interactions.md
+In some cases, the computer holding the log files is only accessible via SSH and prevents visiting the TensorBoard HTTP server. In that case, SSH tunneling can be performed: The following command forwards TensorBoard to `localhost:16006`, assuming it was started with the default IP address:  
 
+`ssh -p <PORT> <USER>@<SERVER> -N -f -L localhost:16006:localhost:6006`
 
 ## TODO
-* fork the lanpa tb project, and adapt it for native structures.
-* if it works well, expand it for the [greeter](https://github.com/tensorflow/tensorboard-plugin-example) plugin. then for the [beholder](https://github.com/chrisranderson/beholder) plugin.
+* expand the pip logger with [greeter](https://github.com/tensorflow/tensorboard-plugin-example) plugin. then for the [beholder](https://github.com/chrisranderson/beholder) plugin.
 * finally expand functionality with further plugins (3D t-sne, videos, TB SNAPSHOT)
-* document, make tutorial
+* document it well (that is, finish the TensorBoard Plugin API and the lanpa_description.md)
 
