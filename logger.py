@@ -1,11 +1,11 @@
-"""This Logger class is  based on the pytorch-tutorial GitHub repo:
+"""This file is  based on the pytorch-tutorial GitHub repo:
    https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/04-utils/tensorboard
    Author: Andres FR, Goethe University Frankfurt a.M.
 """
 
 import tensorflow as tf
 import numpy as np
-# import scipy.misc
+import scipy.misc
 try:
     from StringIO import StringIO  # Python 2.7
 except ImportError:
