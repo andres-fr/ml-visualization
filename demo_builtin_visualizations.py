@@ -3,6 +3,8 @@ import numpy as np
 import datetime
 from tensorboardX import SummaryWriter
 
+
+
 ################################################################################
 ### HELPFUNS AND ALIASES
 ################################################################################
@@ -31,11 +33,12 @@ def demo_text(logger, numsteps=1000):
         logger.add_text("famous PoKeMon", p, i)
 
 def demo_histogram(logger, numsteps=1000):
-    mean_a, mean_b = [rand(-numsteps, numsteps) for _ in range(2)]
-    stddev_a, stddev_b = [rand(0.1, 2) for _ in range(2)]
+    rvar = rand(1, 10)
     for i in range(0, numsteps):
-        logger.add_histogram("distribution A", gaussian(mean_a+i,stddev_a, 100), i)
-        logger.add_histogram("distribution B", gaussian(mean_b-i,stddev_a, 100), i)
+        dist_a = gaussian(-50*numsteps+100*i, i*rvar, 100)
+        dist_b = gaussian(50*numsteps-100*i, numsteps*rvar, 100)
+        logger.add_histogram("distribution A", dist_a, i)
+        logger.add_histogram("distribution B", np.append(dist_a, dist_b), i)
 
 # writer.add_image('Image', x, n_iter) 
 # writer.add_audio('myAudio', x, n_iter)
@@ -46,14 +49,15 @@ def demo_histogram(logger, numsteps=1000):
 ################################################################################
 
 TOTAL_RUNS = 2
+NUMSTEPS = 100
 for i in range(TOTAL_RUNS): # simulate different runs
     print("rendering run no.", i+1, "of", TOTAL_RUNS, "(may take a while...)")
     LOGDIR = make_timestamp("logs/", "run_"+str(i+1))
     LOGGER = SummaryWriter(LOGDIR)
     # add the data
-    demo_scalar(LOGGER)
-    demo_text(LOGGER)
-    demo_histogram(LOGGER)
+    demo_scalar(LOGGER, NUMSTEPS)
+    demo_text(LOGGER, NUMSTEPS)
+    demo_histogram(LOGGER, NUMSTEPS)
     # finally flush and close the file stream. Apart from this explicit flush,
     # flushing is automatically performed asynch (at least every 120 secs, see
     # docstring for the FileWriter class), so information could get lost if

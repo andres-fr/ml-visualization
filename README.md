@@ -1,6 +1,6 @@
 #  TL;DR
 
-Following this instructions is probably enough to use TensorBoard to visualize data. To develop plugins, read further.
+Following this instructions is probably enough to use TensorBoard to visualize data from Python. To develop plugins, read further.
 
 1. clone this repo
 1. `pip install tensorflow-tensorboard` # this is the TB standalone (no needed if TF already installed)
